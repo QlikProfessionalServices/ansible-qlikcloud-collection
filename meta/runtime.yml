@@ -46,7 +46,14 @@
 #     redirect: ansible_collections.ns.col.plugins.module_utils.new_location
 
 # Groups of actions/modules that take a common set of options
-# action_groups:
-#   group_name:
-#     - module1
-#     - module2
+action_groups:
+  tenant:
+    - app
+    - content_security_policy
+    - group_settings
+    - identity_provider
+    - license_settings
+    - space_assignment
+    - space
+    - user
+    - web_integration

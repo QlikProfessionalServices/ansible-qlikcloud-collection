@@ -147,7 +147,7 @@ def main():
         name=dict(type='str', required=False),
         email=dict(type='str', required=False),
         picture=dict(type='str', required=False),
-        assigned_roles=dict(type='list', required=False, options=[
+        assigned_roles=dict(type='list', required=False, default=[], options=[
             'AnalyticsAdmin', 'DataAdmin', 'SharedSpaceCreator', 'ManagedSpaceCreator',
             'DataSpaceCreator', 'TenantAdmin', 'Developer', 'AuditAdmin'
         ]),
