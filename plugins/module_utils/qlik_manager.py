@@ -3,8 +3,8 @@
 
 from ansible.module_utils.basic import AnsibleModule
 
-from ansible.module_utils import helper
-from ansible.module_utils.qlik_diff import QlikDiff
+from ansible_collections.qlikprofessionalservices.qlikcloud.plugins.module_utils import helper
+from ansible_collections.qlikprofessionalservices.qlikcloud.plugins.module_utils.qlik_diff import QlikDiff
 
 from requests.exceptions import HTTPError
 

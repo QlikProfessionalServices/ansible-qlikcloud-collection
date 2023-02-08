@@ -81,8 +81,9 @@ EXAMPLES = '''
 
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils import helper
-from ansible.module_utils.qlik_manager import QlikCloudManager
+
+from ansible_collections.qlikprofessionalservices.qlikcloud.plugins.module_utils import helper
+from ansible_collections.qlikprofessionalservices.qlikcloud.plugins.module_utils.qlik_manager import QlikCloudManager
 
 from qlik_sdk import Users, Filter
 

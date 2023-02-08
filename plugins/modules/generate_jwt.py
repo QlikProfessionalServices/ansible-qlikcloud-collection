@@ -81,7 +81,7 @@ import datetime
 
 from ansible.module_utils.basic import AnsibleModule
 
-from ansible.module_utils.generate_signed_token import generate_signed_token
+from ansible_collections.qlikprofessionalservices.qlikcloud.plugins.module_utils.generate_signed_token import generate_signed_token
 
 
 def main():
