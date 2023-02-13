@@ -77,12 +77,12 @@ EXAMPLES = '''
 '''
 
 
-import datetime
+import time
 
 from ansible.module_utils.basic import AnsibleModule
 
-from ansible_collections.qlikprofessionalservices.qlikcloud.plugins.module_utils.generate_signed_token import generate_signed_token
-
+# from ansible_collections.qlikprofessionalservices.qlikcloud.plugins.module_utils.generate_signed_token import generate_signed_token
+from qlik_sdk import generate_signed_token
 
 def main():
     module_args = dict(
@@ -120,8 +120,8 @@ def main():
       email=module.params['email'],
       email_verified=module.params['email_verified'],
       groups=module.params['groups'],
-      not_before=int(datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y%m%d%H%M%S")),
-      expires_in=datetime.datetime.now() + datetime.timedelta(minutes=30),
+      not_before=int(time.time())-5,
+      expires_in=int(time.time())+300,
       keyid=module.params['keyid'],
       issuer=module.params['issuer'])
     result['jwt'] = signed_token

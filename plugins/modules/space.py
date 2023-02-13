@@ -58,8 +58,8 @@ EXAMPLES = '''
 
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.qlikprofessionalservices.qlikcloud.plugins.module_utils import helper
-from ansible_collections.qlikprofessionalservices.qlikcloud.plugins.module_utils.qlik_manager import QlikCloudManager
+from ..module_utils import helper
+from ..module_utils.qlik_manager import QlikCloudManager
 
 from qlik_sdk import Spaces
 
