@@ -45,12 +45,24 @@ class LookupModule(LookupBase):
 
         self.set_options(var_options=variables, direct=kwargs)
 
+        display = Display()
+        display.vvvvv('Running oauth lookup plugin')
+
+        client_id = self.get_option('client_id')
+        if client_id == None:
+            client_id = self._templar.template(variables['client_id'])
+
+        client_secret = self.get_option('client_secret')
+        if client_secret == None:
+            client_secret = self._templar.template(variables['client_secret'])
+
+        display.v(f'Requesting access token for client_id of {client_id}')
         client = Auth(Config(
             host='https://%s' % variables["inventory_hostname"],
             auth_type=AuthType.OAuth2,
             scope=["user_default"],
-            client_id=self.get_option('client_id'),
-            client_secret=self.get_option('client_secret')))
+            client_id=client_id,
+            client_secret=client_secret))
 
         ret = []
         try:

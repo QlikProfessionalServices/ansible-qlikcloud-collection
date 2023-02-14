@@ -50,10 +50,14 @@ class LookupModule(LookupBase):
 
       self.set_options(var_options=variables, direct=kwargs)
 
+      api_key = self.get_option('api_key')
+      if api_key == None:
+          api_key = self._templar.template(variables['access_token'])
+
       client = Qlik(Config(
           host='https://%s' % variables["inventory_hostname"],
           auth_type=AuthType.APIKey,
-          api_key=self.get_option('api_key')))
+          api_key=api_key))
 
       display = Display()
 
