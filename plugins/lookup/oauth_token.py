@@ -24,6 +24,12 @@ DOCUMENTATION = """
       description:
         - Client secret associated with the ID
       type: string
+    flat:
+      description:
+        - If set to I(True), the return value will be the access token only.
+        - Otherwise the full OAuth token object will be returned.
+      type: bool
+      default: true
   notes:
     - search term is not used.
 """
@@ -68,9 +74,12 @@ class LookupModule(LookupBase):
         try:
             token = client.authorize()
             ret.append(token)
-            return ret
         except HTTPError as err:
             raise AnsibleError('Error getting oauth token, HTTP %s: %s' % (
                 err.response.status_code, err.response.text))
         except Exception as err:
             raise AnsibleError('Error getting oauth token: %s' % to_native(err))
+
+        if self.get_option('flat'):
+            ret = [token['access_token'] for token in ret]
+        return ret

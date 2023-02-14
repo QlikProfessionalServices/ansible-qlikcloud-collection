@@ -16,17 +16,16 @@ DOCUMENTATION = """
     _terms:
       description: filter to use for the query
       required: True
-    full:
-      description: return the full object rather than just the ID
-      type: bool
-      default: false
-      ini:
-        - section: qlik_group_lookup
-          key: return_full_results
     api_key:
       description:
         - OAuth token to authenticate to the tenant
       type: string
+    flat:
+      description:
+        - If set to I(True), the return value will be the group ID only.
+        - Otherwise the full group object will be returned.
+      type: bool
+      default: true
   notes:
     - if read in variable context, the file can be interpreted as YAML if the content is valid to the parser.
     - this lookup does not understand globbing --- use the fileglob lookup instead.
@@ -58,8 +57,6 @@ class LookupModule(LookupBase):
             auth_type=AuthType.APIKey,
             api_key=api_key))
 
-        return_full = self.get_option('full')
-
         display = Display()
         ret = []
         for term in terms:
@@ -80,6 +77,6 @@ class LookupModule(LookupBase):
                 AnsibleError('Error in user lookup, HTTP %s: %s' % (
                         err.response.status_code, err.response.text))
 
-        if not return_full:
-            ret = [group.id for group in groups]
+        if self.get_option('flat'):
+            ret = [group['id'] for group in ret]
         return ret

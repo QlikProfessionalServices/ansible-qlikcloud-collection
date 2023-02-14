@@ -20,6 +20,12 @@ DOCUMENTATION = """
       description:
         - OAuth token to authenticate to the tenant
       type: string
+    flat:
+      description:
+        - If set to I(True), the return value will be the license key only.
+        - Otherwise the full license object will be returned.
+      type: bool
+      default: true
   notes:
     - search term is not used.
 """
@@ -41,6 +47,9 @@ class LookupModule(LookupBase):
 
         self.set_options(var_options=variables, direct=kwargs)
 
+        display = Display()
+        display.vvvvv('Running license lookup plugin')
+
         api_key = self.get_option('api_key')
         if api_key == None:
             api_key = self._templar.template(variables['access_token'])
@@ -54,9 +63,12 @@ class LookupModule(LookupBase):
         try:
             license = client.licenses.get_overview()
             ret.append(license)
-            return ret
         except HTTPError as err:
             raise AnsibleError('Error getting license, HTTP %s: %s' % (
                 err.response.status_code, err.response.text))
         except Exception as err:
             raise AnsibleError('Error getting license: %s' % to_native(err))
+
+        if self.get_option('flat'):
+            ret = [token['licenseKey'] for token in ret]
+        return ret

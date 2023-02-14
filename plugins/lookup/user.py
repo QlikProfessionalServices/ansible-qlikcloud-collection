@@ -29,6 +29,12 @@ DOCUMENTATION = """
       description:
         - OAuth token to authenticate to the tenant
       type: string
+    flat:
+      description:
+        - If set to I(True), the return value will be the user ID only.
+        - Otherwise the full user object will be returned.
+      type: bool
+      default: true
   notes:
     - an empty search term will lookup the user associated with the api key.
 """
@@ -91,4 +97,6 @@ class LookupModule(LookupBase):
               AnsibleError('Error in user lookup, HTTP %s: %s' % (
                   err.response.status_code, err.response.text))
 
+      if self.get_option('flat'):
+          ret = [user['id'] for user in ret]
       return ret
