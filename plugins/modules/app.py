@@ -35,6 +35,7 @@ options:
     required: false
     choices:
       - present
+      - reloaded
       - absent
     default: present
   tenant_uri:
@@ -72,6 +73,10 @@ class QlikAppManager(QlikCloudManager):
         self.app = {}
         self._space_id = ''
         self.desired = helper.construct_state_from_params(module.params, ignore_params=['file'])
+        self.states_map = {
+            'present': self.ensure_present,
+            'absent': self.ensure_absent,
+            'reloaded': self.reload}
 
         super().__init__(module)
 
@@ -183,6 +188,21 @@ class QlikAppManager(QlikCloudManager):
                 **self.results)
         self.results['app']=helper.asdict(self.app)
         return self.app.attributes
+
+    def reload(self):
+        self.ensure_present()
+        self.results['changed'] = True
+
+        if self.module.check_mode:
+            return
+
+        try:
+            self.client.reloads.create(dict(appId=self.app.attributes.id))
+        except HTTPError as err:
+            self.module.fail_json(
+                msg='Error reloading app, HTTP %s: %s' % (
+                    err.response.status_code, err.response.text),
+                **self.results)
 
 
 def main():

@@ -3,8 +3,8 @@
 
 from ansible.module_utils.basic import AnsibleModule
 
-from ansible_collections.qlikprofessionalservices.qlikcloud.plugins.module_utils import helper
-from ansible_collections.qlikprofessionalservices.qlikcloud.plugins.module_utils.qlik_diff import QlikDiff
+from . import helper
+from .qlik_diff import QlikDiff
 
 from requests.exceptions import HTTPError
 
@@ -31,6 +31,10 @@ class QlikCloudManager:
             }
         if not hasattr(self, 'patchable'):
             self.patchable = []
+        if not hasattr(self, 'states_map'):
+            self.states_map = {
+                'present': self.ensure_present,
+                'absent': self.ensure_absent}
 
     @property
     def exists(self):
@@ -139,11 +143,7 @@ class QlikCloudManager:
 
     def execute(self):
         '''Execute the desired action according to map of states and actions.'''
-        states_map = {
-            'present': self.ensure_present,
-            'absent': self.ensure_absent
-        }
-        process_action = states_map[self.state]
+        process_action = self.states_map[self.state]
         process_action()
 
         if self.module._diff:
