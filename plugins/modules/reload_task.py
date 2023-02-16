@@ -112,7 +112,7 @@ class QlikReloadTaskManager(QlikCloudManager):
         super().__init__(module)
 
     def existing(self):
-        '''Return existing space'''
+        '''Return existing reload task'''
         if self.resource != {}:
             return self.resource
 

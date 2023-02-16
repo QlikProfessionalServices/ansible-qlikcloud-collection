@@ -3,7 +3,7 @@
 
 DOCUMENTATION = '''
 ---
-module: reload_task
+module: extension
 version_added: "0.1.0"
 short_description: Manages extensions in Qlik Cloud.
 description:
@@ -53,6 +53,8 @@ from ansible.module_utils.basic import AnsibleModule
 from ..module_utils import helper
 from ..module_utils.qlik_manager import QlikCloudManager
 
+from requests.exceptions import HTTPError
+
 from qlik_sdk import Extensions
 
 
@@ -80,6 +82,20 @@ class QlikExtensionManager(QlikCloudManager):
                 return ext
 
         return self.resource
+
+    def create(self):
+        if self.module.check_mode:
+            return self.existing()
+
+        try:
+            with open(self.module_params['file'], 'rb') as f:
+                new_resource = self.client.create(file=f, data=self.desired)
+                return new_resource
+        except HTTPError as err:
+            self.module.fail_json(
+                msg='Error creating %s, HTTP %s: %s' % (
+                    self.type, err.response.status_code, err.response.text),
+                **self.results)
 
 
 def main():
