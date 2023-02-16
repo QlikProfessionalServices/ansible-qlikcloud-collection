@@ -108,7 +108,7 @@ class QlikCloudManager:
             return self.existing()
 
         try:
-            updated = self.resource.update(self.desired)
+            updated = self.resource.set(self.desired)
             return updated
         except HTTPError as err:
             self.module.fail_json(

@@ -122,19 +122,6 @@ class QlikCspOriginManager(QlikCloudManager):
 
         return self.resource
 
-    def update(self):
-        if self.module.check_mode:
-            return self.existing()
-
-        try:
-            updated = self.existing().set(self.desired)
-            return updated
-        except HTTPError as err:
-            self.module.fail_json(
-                msg='Error updating %s, HTTP %s: %s' % (
-                    self.type, err.response.status_code, err.response.text),
-                **self.results)
-
 
 def main():
     module_args = dict(
