@@ -50,12 +50,15 @@ EXAMPLES = '''
 
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ..module_utils import helper
 from ..module_utils.qlik_manager import QlikCloudManager
 
 from requests.exceptions import HTTPError
+import hashlib
+import json
 
-from qlik_sdk import Themes
+from qlik_sdk import Themes, Theme
 
 
 class QlikThemeManager(QlikCloudManager):
@@ -67,6 +70,7 @@ class QlikThemeManager(QlikCloudManager):
         }
         self.resource = {}
         self.client = helper.get_client(module, Themes)
+        self.desired = helper.construct_state_from_params(module.params)
 
         super().__init__(module)
 
@@ -76,10 +80,12 @@ class QlikThemeManager(QlikCloudManager):
             return self.resource
 
         results = self.client.get_themes()
-        for ext in results:
-            if ext.name == self.module_params['name']:
-                self.resource = ext
-                return ext
+        for theme in results:
+            if theme.name == self.module_params['name']:
+                theme.file = theme.file['md5']
+                self.resource = theme
+                self.desired['file'] = self.compute_md5()
+                return theme
 
         return self.resource
 
@@ -97,6 +103,35 @@ class QlikThemeManager(QlikCloudManager):
                 msg='Error creating %s, HTTP %s: %s' % (
                     self.type, err.response.status_code, err.response.text),
                 **self.results)
+
+    def update(self):
+        if self.module.check_mode:
+            return self.existing()
+
+        try:
+            with open(self.module_params['file'], 'rb') as f:
+                response = self.client.auth.rest(
+                    path="/themes/{id}".replace("{id}", self.resource.id),
+                    method="PATCH",
+                    params={},
+                    data=None,
+                    files=dict(file=f,data=(None, json.dumps(self.desired))),
+                )
+                updated = Theme(**response.json())
+                updated.auth = self.client.auth
+                return updated
+        except HTTPError as err:
+            self.module.fail_json(
+                msg='Error patching %s, HTTP %s: %s' % (
+                    self.type, err.response.status_code, err.response.text),
+                **self.results, patch=self.patches)
+
+    def compute_md5(self):
+        hash_md5 = hashlib.md5()
+        with open(self.module_params['file'], "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_md5.update(chunk)
+        return hash_md5.hexdigest()
 
 
 def main():
