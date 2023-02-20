@@ -8,6 +8,9 @@ from ansible import constants as C
 from ansible.plugins.action import ActionBase
 from ansible.utils.vars import merge_hash
 from ansible.module_utils.parsing.convert_bool import boolean
+from ansible.utils.display import Display
+
+from ..module_utils import oauth
 
 
 class ActionModule(ActionBase):
@@ -18,6 +21,9 @@ class ActionModule(ActionBase):
         self._supports_check_mode = True
         self._supports_async = True
 
+        display = Display()
+        display.v('Running qlikcloud action plugin')
+
         result = super(ActionModule, self).run(tmp, task_vars)
         del tmp  # tmp no longer has any effect
 
@@ -27,7 +33,19 @@ class ActionModule(ActionBase):
         if not 'tenant_uri' in self._task.args:
             kwargs['tenant_uri'] = 'https://' + task_vars.get('ansible_host')
         if not 'api_key' in self._task.args:
-            kwargs['api_key'] = task_vars.get('access_token')
+            access_token = task_vars.get('access_token')
+            if not access_token:
+                client_id = self._templar.template(task_vars.get('client_id'))
+                client_secret = self._templar.template(task_vars.get('client_secret'))
+                token = oauth.get_access_token(
+                    hostname = task_vars.get('ansible_host'),
+                    client_id=client_id,
+                    client_secret=client_secret)
+                access_token = token['access_token']
+                result['ansible_facts'] = {'api_key': access_token}
+                cacheable = boolean(self._task.args.pop('cacheable', False))
+                result['_ansible_facts_cacheable'] = cacheable
+            kwargs['api_key'] = access_token
         new_module_args = self._task.args | kwargs
 
         # do work!

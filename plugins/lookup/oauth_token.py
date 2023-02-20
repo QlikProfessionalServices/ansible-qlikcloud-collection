@@ -13,9 +13,6 @@ DOCUMENTATION = """
   description:
       - This lookup returns an oauth access token for a Qlik Cloud tenant.
   options:
-    _terms:
-      description: not used
-      required: False
     client_id:
       description:
         - Client ID for the region of the tenant
@@ -30,24 +27,18 @@ DOCUMENTATION = """
         - Otherwise the full OAuth token object will be returned.
       type: bool
       default: true
-  notes:
-    - search term is not used.
 """
 
 
-from ansible.errors import AnsibleError
 from ansible.plugins.lookup import LookupBase
 from ansible.utils.display import Display
-from ansible.module_utils.common.text.converters import to_native
 
-from requests.exceptions import HTTPError
-
-from qlik_sdk import AuthType, Config, Auth
+from ..module_utils import oauth
 
 
 class LookupModule(LookupBase):
 
-    def run(self, terms, variables=None, **kwargs):
+    def run(self, variables=None, **kwargs):
 
         self.set_options(var_options=variables, direct=kwargs)
 
@@ -62,24 +53,12 @@ class LookupModule(LookupBase):
         if client_secret == None:
             client_secret = self._templar.template(variables['client_secret'])
 
-        display.v(f'Requesting access token for client_id of {client_id}')
-        client = Auth(Config(
-            host='https://%s' % variables["inventory_hostname"],
-            auth_type=AuthType.OAuth2,
-            scope=["user_default"],
+        token = oauth.get_access_token(
+            hostname=variables["inventory_hostname"],
             client_id=client_id,
-            client_secret=client_secret))
-
-        ret = []
-        try:
-            token = client.authorize()
-            ret.append(token)
-        except HTTPError as err:
-            raise AnsibleError('Error getting oauth token, HTTP %s: %s' % (
-                err.response.status_code, err.response.text))
-        except Exception as err:
-            raise AnsibleError('Error getting oauth token: %s' % to_native(err))
+            client_secret=client_secret)
 
         if self.get_option('flat'):
-            ret = [token['access_token'] for token in ret]
-        return ret
+            return [token['access_token']]
+        else:
+            return [token]
