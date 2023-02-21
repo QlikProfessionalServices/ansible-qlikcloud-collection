@@ -26,6 +26,9 @@ options:
       - ID of the owner
     required: true
   space_id:
+    description:
+      - Name of the space
+    required: true
   state:
     description:
       - State of the link
@@ -87,7 +90,7 @@ class QlikLinkManager(QlikCloudManager):
                 return self._space_id
 
     def existing(self):
-        '''Return existing reload task'''
+        '''Return existing link'''
         if self.resource != {}:
             return self.resource
 
