@@ -61,6 +61,7 @@ from ..module_utils import helper
 from ..module_utils.qlik_manager import QlikCloudManager
 
 from requests.exceptions import HTTPError
+import os
 
 
 class QlikAppManager(QlikCloudManager):
@@ -70,7 +71,7 @@ class QlikAppManager(QlikCloudManager):
             'changed': False,
             'app': {},
         }
-        self.app = {}
+        self.resource = {}
         self._space_id = ''
         self.desired = helper.construct_state_from_params(module.params, ignore_params=['file'])
         self.states_map = {
@@ -97,8 +98,8 @@ class QlikAppManager(QlikCloudManager):
 
     def existing(self):
         '''Return existing app'''
-        if self.app:
-            return self.app.attributes
+        if self.resource:
+            return self.resource.attributes
 
         results = self.client.items.get_items(
             resourceType='app',
@@ -109,15 +110,15 @@ class QlikAppManager(QlikCloudManager):
 
         for app in results:
             if app.name == self.module_params['name']:
-                self.app = self.client.apps.get(app.resourceId)
-                return self.app.attributes
+                self.resource = self.client.apps.get(app.resourceId)
+                return self.resource.attributes
 
-        return self.app
+        return self.resource
 
     def update(self):
         if self.module.check_mode:
-            self.results['app']=helper.asdict(self.app)
-            return self.app.attributes
+            self.results['app']=helper.asdict(self.resource)
+            return self.resource.attributes
 
         changes_map = {
             'description': self.update_description,
@@ -129,11 +130,11 @@ class QlikAppManager(QlikCloudManager):
             update_func = changes_map[attr]
             update_func(self.changes[attr])
 
-        return helper.asdict(self.app.attributes)
+        return helper.asdict(self.resource.attributes)
 
     def update_description(self, description: str):
         try:
-            self.app = self.app.set(dict(description=description))
+            self.resource = self.resource.set(dict(description=description))
         except HTTPError as err:
             self.module.fail_json(
                 msg='Error updating app description, HTTP %s: %s' % (
@@ -142,16 +143,16 @@ class QlikAppManager(QlikCloudManager):
 
     def update_owner(self, id: str):
         try:
-            self.app = self.app.set_owner(dict(ownerId=id))
+            self.resource = self.resource.set_owner(dict(ownerId=id))
         except HTTPError as err:
             self.module.fail_json(
                 msg='Error updating app owner, HTTP %s: %s' % (
                     err.response.status_code, err.response.text),
-                **self.results, app_id=self.app.attributes.id)
+                **self.results, app_id=self.resource.attributes.id)
 
     def update_space(self, name: str):
         try:
-            self.app = self.app.set_space(dict(spaceId=self.space_id))
+            self.resource = self.resource.set_space(dict(spaceId=self.space_id))
         except HTTPError as err:
             self.module.fail_json(
                 msg='Error updating app space, HTTP %s: %s' % (
@@ -160,24 +161,31 @@ class QlikAppManager(QlikCloudManager):
 
     def create(self):
         if self.module.check_mode:
-            self.results['app']=helper.asdict(self.app)
+            self.results['app']=helper.asdict(self.resource)
             return self.results
 
         self.desired['spaceId'] = self.space_id
         try:
             if self.module_params['file']:
-                self.app = self.client.apps.import_app(dict(
-                    data=self.desired['file'],
-                    name=self.desired['name'],
-                    spaceId=self.space_id,
-                ))
+                file_id = ''
+                with open(self.module_params['file'], 'rb') as f:
+                    params = {'filename': os.path.basename(self.module_params['file'])}
+                    response = self.client.rest(
+                        method='POST',
+                        path='/temp-contents',
+                        data=f,
+                        params=params)
+                    file_id = response.headers['Location'].split('/')[-1]
+                self.resource = self.client.apps.import_app(
+                    fileId=file_id,
+                    spaceId=self.space_id)
                 if self.module_params['description']:
                     self.update_description(self.module_params['description'])
             elif self.module_params['origin_app_id']:
                 origin_app = self.client.apps.get(self.module_params['origin_app_id'])
-                self.app = origin_app.publish(dict(spaceId=self.space_id))
+                self.resource = origin_app.publish(dict(spaceId=self.space_id))
             else:
-                self.app = self.client.apps.create(dict(attributes=self.desired))
+                self.resource = self.client.apps.create(dict(attributes=self.desired))
 
             if self.module_params['owner_id']:
                 self.update_owner(self.module_params['owner_id'])
@@ -186,8 +194,8 @@ class QlikAppManager(QlikCloudManager):
                 msg='Error creating app, HTTP %s: %s' % (
                     err.response.status_code, err.response.text),
                 **self.results)
-        self.results['app']=helper.asdict(self.app)
-        return self.app.attributes
+        self.results['app']=helper.asdict(self.resource)
+        return self.resource.attributes
 
     def reload(self):
         self.ensure_present()
@@ -197,7 +205,7 @@ class QlikAppManager(QlikCloudManager):
             return
 
         try:
-            self.client.reloads.create(dict(appId=self.app.attributes.id))
+            self.client.reloads.create(dict(appId=self.resource.attributes.id))
         except HTTPError as err:
             self.module.fail_json(
                 msg='Error reloading app, HTTP %s: %s' % (
