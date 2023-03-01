@@ -38,7 +38,7 @@ from ..module_utils import oauth
 
 class LookupModule(LookupBase):
 
-    def run(self, variables=None, **kwargs):
+    def run(self, terms, variables=None, **kwargs):
 
         self.set_options(var_options=variables, direct=kwargs)
 
@@ -54,7 +54,7 @@ class LookupModule(LookupBase):
             client_secret = self._templar.template(variables['client_secret'])
 
         token = oauth.get_access_token(
-            hostname=variables["inventory_hostname"],
+            hostname=variables["ansible_host"],
             client_id=client_id,
             client_secret=client_secret)
 

@@ -53,7 +53,7 @@ class LookupModule(LookupBase):
             api_key = self._templar.template(variables['access_token'])
 
         client = Qlik(Config(
-            host='https://%s' % variables["inventory_hostname"],
+            host='https://%s' % variables["ansible_host"],
             auth_type=AuthType.APIKey,
             api_key=api_key))
 
