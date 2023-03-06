@@ -42,7 +42,7 @@ class ActionModule(ActionBase):
                     client_id=client_id,
                     client_secret=client_secret)
                 access_token = token['access_token']
-                result['ansible_facts'] = {'api_key': access_token}
+                result['ansible_facts'] = {'access_token': access_token}
                 cacheable = boolean(self._task.args.pop('cacheable', False))
                 result['_ansible_facts_cacheable'] = cacheable
             kwargs['api_key'] = access_token
