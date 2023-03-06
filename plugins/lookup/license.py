@@ -36,6 +36,7 @@ from ansible.plugins.lookup import LookupBase
 from ansible.utils.display import Display
 from ansible.module_utils.common.text.converters import to_native
 
+from dataclasses import asdict
 from requests.exceptions import HTTPError
 
 from qlik_sdk import AuthType, Config, Qlik
@@ -62,7 +63,7 @@ class LookupModule(LookupBase):
         ret = []
         try:
             license = client.licenses.get_overview()
-            ret.append(license)
+            ret.append(asdict(license))
         except HTTPError as err:
             raise AnsibleError('Error getting license, HTTP %s: %s' % (
                 err.response.status_code, err.response.text))
