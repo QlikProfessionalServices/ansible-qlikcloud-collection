@@ -13,13 +13,9 @@ options:
     description:
       - ID of the app
     required: true
-  id:
+  properties:
     description:
-      - ID of the object
-    required: true
-  type:
-    description:
-      - type of the object
+      - The properties of the object.
     required: true
   state:
     description:
@@ -43,16 +39,23 @@ EXAMPLES = '''
   # Create app object
   app_object:
     app_id: 116dbfae-7fb9-4983-8e23-5ccd8c508722
-    id: EpsDdJ
-    type: my-custom-hypercube
+    properties:
+      qProperty:
+        qInfo:
+          qId: EpsDdJ
+          qType: my-custom-hypercube
 '''
 
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.common.text.converters import to_native
+
 from ..module_utils import helper
 from ..module_utils.qlik_manager import QlikCloudManager
 
-from qlik_sdk import Apps, GenericObjectProperties, NxInfo
+import json
+
+from qlik_sdk import Apps, GenericObjectProperties, GenericObjectEntry
 
 
 class QlikAppObjectManager(QlikCloudManager):
@@ -63,6 +66,7 @@ class QlikAppObjectManager(QlikCloudManager):
             'app_object': {},
         }
         self.resource = {}
+        self.desired = json.loads(module.params['properties'])
         self.client: Apps = helper.get_client(module, Apps)
 
         super().__init__(module)
@@ -76,15 +80,34 @@ class QlikAppObjectManager(QlikCloudManager):
         if self.resource != {}:
             return self.resource
 
-        obj = self._app.get_object(self.module_params['id'])
+        try:
+          obj = self._app.get_object(self.desired['qProperty']['qInfo']['qId'])
+        except Exception as err:
+            self.module.fail_json(
+                msg='Error getting object: %s' % (to_native(err)),
+                **self.results)
         if obj.qType is not None:
             self.resource = obj
+            self.results.update({'app_object': obj})
         return self.resource
 
     def create(self):
-        obj = self._app.create_object(GenericObjectProperties(
-            qInfo=NxInfo(qId=self.module_params['id'], qType=self.module_params['type'])
-        ))
+        qInfo = GenericObjectProperties(qInfo=self.desired['qProperty']['qInfo'])
+
+        try:
+          obj = self._app.create_object(qInfo)
+        except Exception as err:
+            self.module.fail_json(
+                msg='Error creating object: %s' % (to_native(err)),
+                **self.results)
+
+        try:
+          obj.set_full_property_tree(GenericObjectEntry(**json.loads(self.module_params['properties'])))
+        except Exception as err:
+            self.module.fail_json(
+                msg='Error setting full property tree: %s' % (to_native(err)),
+                **self.results)
+
         self.resource = obj
         return obj
 
@@ -92,14 +115,25 @@ class QlikAppObjectManager(QlikCloudManager):
         pass
 
     def delete(self):
-        pass
+        self._app.destroy_object(self.module_params['id'])
 
     def execute(self):
         '''Execute the desired action according to map of states and actions.'''
-        self._app = self.client.get(self.module_params['app_id'])
-        with self._app.open():
-            process_action = self.states_map[self.state]
-            process_action()
+        try:
+          self._app = self.client.get(self.module_params['app_id'])
+        except Exception as err:
+            self.module.fail_json(
+                msg='Error getting app details: %s; %s' % (to_native(err), self.module_params['api_key']),
+                **self.results)
+
+        try:
+            with self._app.open():
+                process_action = self.states_map[self.state]
+                process_action()
+        except Exception as err:
+            self.module.fail_json(
+                msg='Error opening app: %s' % (to_native(err)),
+                **self.results)
 
         if self.module._diff:
             self.results['diff'] = self.diff
@@ -110,8 +144,7 @@ class QlikAppObjectManager(QlikCloudManager):
 def main():
     module_args = dict(
         app_id=dict(type='str', required=True),
-        id=dict(type='str', required=True),
-        type=dict(type='str', required=True),
+        properties=dict(type='json', required=True),
         state=dict(type='str', required=False, default='present'),
         tenant_uri=dict(type='str', required=True),
         api_key=dict(type='str', required=True)
