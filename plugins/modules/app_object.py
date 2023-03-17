@@ -81,7 +81,7 @@ class QlikAppObjectManager(QlikCloudManager):
             return self.resource
 
         try:
-          obj = self._app.get_object(self.desired['qProperty']['qInfo']['qId'])
+            obj = self._app.get_object(self.desired['qProperty']['qInfo']['qId'])
         except Exception as err:
             self.module.fail_json(
                 msg='Error getting object: %s' % (to_native(err)),
@@ -95,14 +95,14 @@ class QlikAppObjectManager(QlikCloudManager):
         qInfo = GenericObjectProperties(qInfo=self.desired['qProperty']['qInfo'])
 
         try:
-          obj = self._app.create_object(qInfo)
+            obj = self._app.create_object(qInfo)
         except Exception as err:
             self.module.fail_json(
                 msg='Error creating object: %s' % (to_native(err)),
                 **self.results)
 
         try:
-          obj.set_full_property_tree(GenericObjectEntry(**json.loads(self.module_params['properties'])))
+            obj.set_full_property_tree(GenericObjectEntry(**json.loads(self.module_params['properties'])))
         except Exception as err:
             self.module.fail_json(
                 msg='Error setting full property tree: %s' % (to_native(err)),
