@@ -125,8 +125,9 @@ class QlikUserManager(QlikCloudManager):
 
         self.get_role_ids()
 
+        subject = self.module_params["subject"].replace('\\', '\\\\')
         filter = '(status eq "active" or status eq "disabled" or status eq "invited")'
-        filter += f' and (subject eq "{self.module_params["subject"]}")'
+        filter += f' and (subject eq "{subject}")'
         query = Filter(filter=filter)
         results = self.client.filter(query)
         if len(results) > 0:
