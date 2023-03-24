@@ -24,6 +24,7 @@ options:
     choices:
       - present
       - absent
+      - published
     default: present
   tenant_uri:
     description:
@@ -66,6 +67,11 @@ class QlikAppObjectManager(QlikCloudManager):
             'app_object': {},
         }
         self.resource = {}
+        self.states_map = {
+            'present': self.ensure_present,
+            'absent': self.ensure_absent,
+            'published': self.ensure_published,
+        }
         self.desired = json.loads(module.params['properties'])
         self.client: Apps = helper.get_client(module, Apps)
 
@@ -117,6 +123,13 @@ class QlikAppObjectManager(QlikCloudManager):
     def delete(self):
         self._app.destroy_object(self.module_params['id'])
 
+    def ensure_published(self):
+        self.ensure_present()
+
+        if self.existing().get_layout().qMeta.published == False:
+            self.existing().publish()
+            self.results.update({'changed': True})
+
     def execute(self):
         '''Execute the desired action according to map of states and actions.'''
         try:
@@ -145,7 +158,11 @@ def main():
     module_args = dict(
         app_id=dict(type='str', required=True),
         properties=dict(type='json', required=True),
-        state=dict(type='str', required=False, default='present'),
+        state=dict(
+          type='str',
+          required=False,
+          default='present',
+          options=['present', 'absent', 'published']),
         tenant_uri=dict(type='str', required=True),
         api_key=dict(type='str', required=True)
     )
