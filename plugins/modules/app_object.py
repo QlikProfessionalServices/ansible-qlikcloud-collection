@@ -94,7 +94,6 @@ class QlikAppObjectManager(QlikCloudManager):
                 **self.results)
         if obj.qType is not None:
             self.resource = obj
-            self.results.update({'app_object': obj})
         return self.resource
 
     def create(self):
@@ -121,12 +120,13 @@ class QlikAppObjectManager(QlikCloudManager):
         pass
 
     def delete(self):
-        self._app.destroy_object(self.module_params['id'])
+        self.resource.un_publish()
+        self._app.destroy_object(self.desired['qProperty']['qInfo']['qId'])
 
     def ensure_published(self):
         self.ensure_present()
 
-        if self.existing().get_layout().qMeta.published == False:
+        if not hasattr(self.existing().get_layout().qMeta, 'published') or self.existing().get_layout().qMeta.published == False:
             self.existing().publish()
             self.results.update({'changed': True})
 
