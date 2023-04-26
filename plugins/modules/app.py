@@ -9,6 +9,10 @@ short_description: Manages apps in Qlik Cloud.
 description:
     - Manages apps in Qlik Cloud.
 options:
+  id:
+    description:
+      - ID of the app
+    required: false
   name:
     description:
       - Name of the app
@@ -101,19 +105,24 @@ class QlikAppManager(QlikCloudManager):
         if self.resource:
             return self.resource.attributes
 
-        results = self.client.items.get_items(
-            resourceType='app',
-            name=self.module_params["name"],
-            spaceId=self.space_id)
-        if len(results) == 0:
-            return {}
+        if (app_id := self.module_params["id"]) == None:
+            results = self.client.items.get_items(
+                resourceType='app',
+                name=self.module_params["name"],
+                spaceId=self.space_id)
+            if len(results) == 0:
+                return {}
 
-        for app in results:
-            if app.name == self.module_params['name']:
-                self.resource = self.client.apps.get(app.resourceId)
-                return self.resource.attributes
+            for app in results:
+                if app.name == self.module_params['name']:
+                    app_id = app.resourceId
+                    break
 
-        return self.resource
+        self.resource = self.client.apps.get(app_id)
+        if self.module_params["space"]:
+            self.desired.update({'spaceId': self.space_id})
+
+        return self.resource.attributes
 
     def update(self):
         if self.module.check_mode:
@@ -123,7 +132,7 @@ class QlikAppManager(QlikCloudManager):
         changes_map = {
             'description': self.update_description,
             'ownerId': self.update_owner,
-            'space': self.update_space
+            'spaceId': self.update_space
         }
 
         for attr in self.changes:
@@ -215,6 +224,7 @@ class QlikAppManager(QlikCloudManager):
 
 def main():
     module_args = dict(
+        id=dict(type='str', required=False),
         name=dict(type='str', required=True),
         space=dict(type='str', required=False),
         description=dict(type='str', required=False),
