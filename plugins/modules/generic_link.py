@@ -94,17 +94,21 @@ class QlikLinkManager(QlikCloudManager):
         if self.resource != {}:
             return self.resource
 
-        query_params = {'name': self.module_params['name']}
+        query_params = {
+            'resourceType': 'genericlink',
+            'name': self.module_params['name'],
+        }
         if self.space_id is not None:
             query_params['spaceId'] = self.space_id
         response = self.client.items.get_items(**query_params)
         results = ListableResource(
-            response=[link.resourceAttributes for link in response],
+            response=response,
             auth=self.client.auth,
             path="/generic-links",
         )
         if len(results) > 0:
-            self.resource = results[0]
+            link = self.client.rest(method='GET', path=f'/generic-links/{results[0].resourceId}')
+            self.resource = link.json()['data'][0]
 
         return self.resource
 
