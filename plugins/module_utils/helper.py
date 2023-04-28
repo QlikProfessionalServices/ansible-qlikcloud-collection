@@ -31,7 +31,7 @@ def to_camel_case(snake_str):
 def construct_state_from_params(module_params: dict, ignore_params=[]):
     '''Returns true if existing space is different to module params, otherwise false'''
     state = {}
-    ignore_params += ['state', 'tenant_uri', 'api_key']
+    ignore_params += ['state', 'tenant_uri', 'api_key', 'space']
     for k, v in module_params.items():
         if k in ignore_params:
             continue

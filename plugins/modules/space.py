@@ -72,6 +72,8 @@ class QlikSpaceManager(QlikCloudManager):
             'space': {},
         }
         self.resource = {}
+        self.desired = helper.construct_state_from_params(
+            module.params, ignore_params=['allow_recreate'])
         self.patchable = ['name', 'description', 'ownerId']
         self.client = helper.get_client(module, Spaces)
 

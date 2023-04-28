@@ -19,9 +19,9 @@ class QlikDiff:
         '''Returns true if existing space is different to module params, otherwise false'''
         different = False
         for attr in self.desired:
-            if not attr in self.existing or self.desired[attr] is None:
+            if self.desired[attr] is None:
                 continue
-            if self.desired[attr] != self.existing[attr]:
+            if self.desired[attr] != self.existing.get(attr):
                 different = True
                 self.differences.append(attr)
 
@@ -30,7 +30,7 @@ class QlikDiff:
 
     def _update_diff(self):
         for attr in self.differences:
-            self.diff['before'].update({attr: self.existing[attr]})
+            self.diff['before'].update({attr: self.existing.get(attr)})
             self.diff['after'].update({attr: self.desired[attr]})
 
     def can_patch(self, patchable_attributes: list):
