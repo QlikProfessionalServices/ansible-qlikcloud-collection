@@ -9,8 +9,8 @@ short_description: Manages web integrations in Qlik Cloud.
 description:
   - Manages web integrations in Qlik Cloud.
 options:
-  auto_assign_analyzer:
-    name:
+  name:
+    description:
       - Name of the web integration.
     required: false
   valid_origins:
