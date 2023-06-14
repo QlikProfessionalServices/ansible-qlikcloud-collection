@@ -17,6 +17,8 @@ options:
     description:
       - Name of the data connection
     required: true
+    aliases:
+      - name
   space:
     description:
       - Name of the space where the data connection exists
@@ -154,11 +156,12 @@ class QlikDataConnectionManager(QlikCloudManager):
         self.resource = {}
         self._space_id = ''
         self.client = helper.get_client(module)
-        self.desired = helper.construct_state_from_params(
-            module.params,
-            ignore_params=['connection_name', 'data_source_id', 'connection_properties'])
 
         super().__init__(module)
+
+    @property
+    def different(self):
+        return False
 
     @property
     def space_id(self):
@@ -225,7 +228,7 @@ class QlikDataConnectionManager(QlikCloudManager):
 def main():
     module_args = dict(
         data_source_id=dict(type='str', required=True),
-        connection_name=dict(type='str', required=True),
+        connection_name=dict(type='str', required=True, aliases=['name']),
         space=dict(type='str', required=False),
         connection_properties=dict(type='dict', required=True),
         state=dict(type='str', required=False, default='present'),
