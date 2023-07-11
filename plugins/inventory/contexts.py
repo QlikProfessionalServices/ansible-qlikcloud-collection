@@ -16,6 +16,8 @@ DOCUMENTATION = '''
 '''
 
 
+import yaml
+
 from urllib.parse import urlparse
 
 from ansible.errors import AnsibleParserError
@@ -31,12 +33,22 @@ class InventoryModule(BaseInventoryPlugin):
 
     def verify_file(self, path):
         ''' return true/false if this is possibly a valid file for this plugin to consume '''
-        valid = False
         if super(InventoryModule, self).verify_file(path):
             # base class verifies that file exists and is readable by current user
             if path.endswith(('contexts.yml')):
-                valid = True
-        return valid
+                return True
+
+            try:
+                with open(path, 'r') as stream:
+                    yaml_data = yaml.safe_load(stream)
+            except Exception as e:
+                print(e)
+                raise AnsibleParserError(e)
+
+            if 'contexts' in yaml_data:
+                return True
+            else:
+                return False
 
     def parse(self, inventory, loader, path, cache=False):
         ''' parses the inventory file '''
