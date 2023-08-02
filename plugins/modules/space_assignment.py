@@ -169,7 +169,7 @@ def main():
         ]),
         state=dict(type='str', required=False, default='present'),
         tenant_uri=dict(type='str', required=True),
-        api_key=dict(type='str', required=True)
+        api_key=dict(type='str', required=True, no_log=True)
     )
 
     module = AnsibleModule(
