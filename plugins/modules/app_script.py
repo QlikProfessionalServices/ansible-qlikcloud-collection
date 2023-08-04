@@ -16,7 +16,15 @@ options:
   content:
     description:
       - The content of the script.
-    required: true
+  regexp:
+    description:
+      - Used with C(replace)
+        The regular expression to look for in every line of the script.
+        Uses Python regular expressions. See U(https://docs.python.org/3/library/re.html).
+  replace:
+    description:
+      - Used with C(regexp)
+        The text to replace the matching regexp.
   state:
     description:
       - State of the script
@@ -52,6 +60,7 @@ from ..module_utils import helper
 from ..module_utils.qlik_manager import QlikCloudManager
 
 from requests.exceptions import HTTPError
+import re
 
 from qlik_sdk import Apps, GenericObjectProperties, GenericObjectEntry
 
@@ -75,6 +84,13 @@ class QlikAppScriptManager(QlikCloudManager):
 
     @property
     def different(self):
+        if self.module_params['regexp']:
+            self.desired = re.sub(
+                self.module_params['regexp'],
+                self.module_params['replace'],
+                self.existing(),
+                flags=re.I)
+
         if self.module._diff:
             self.diff['before'] = self.existing()
             self.diff['after'] = self.desired
@@ -100,7 +116,7 @@ class QlikAppScriptManager(QlikCloudManager):
         if self.module.check_mode:
             self.results['app_object']=helper.asdict(self.resource)
             return self.resource
-        
+
         self._app.set_script(self.desired)
 
         return self.desired
@@ -134,7 +150,9 @@ class QlikAppScriptManager(QlikCloudManager):
 def main():
     module_args = dict(
         app_id=dict(type='str', required=True),
-        content=dict(type='str', required=True),
+        content=dict(type='str'),
+        regexp = dict(type='str'),
+        replace = dict(type='str'),
         state=dict(
             type='str',
             required=False,
@@ -146,7 +164,10 @@ def main():
 
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=True
+        supports_check_mode=True,
+        required_if=[('state', 'present', ('content', 'regexp', 'replace'), True)],
+        required_together=[('regexp', 'replace')],
+        mutually_exclusive=[('content', 'regexp'), ('content', 'replace')],
     )
 
     manager = QlikAppScriptManager(module)
