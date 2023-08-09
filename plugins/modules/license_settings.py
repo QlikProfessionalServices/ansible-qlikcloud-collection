@@ -30,7 +30,7 @@ options:
 '''
 
 EXAMPLES = '''
-  # Create JWT IdP
+  # Set license settings
   license_settings:
     auto_assign_analyzer: yes
     auto_assign_professional: yes

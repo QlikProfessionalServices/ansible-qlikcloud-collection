@@ -25,7 +25,7 @@ options:
     description:
       - ID of the owner
     required: true
-  space_id:
+  space:
     description:
       - Name of the space
     required: true
@@ -48,10 +48,22 @@ options:
 '''
 
 EXAMPLES = '''
-  # Create link
+  # Create a new link
   generic_link:
     name: Qlik website
     link: https://www.qlik.com
+
+  # Change the owner of an existing link.
+  generic_link:
+    name: Qlik website
+    link: https://www.qlik.com
+    owner_id: R2aCCzAa_fvf1s-NI9XU2y467l-g4sX6
+
+  # Change the space that an existing link resides in.
+  generic_link:
+    name: Qlik website
+    link: https://www.qlik.com
+    space: Development
 '''
 
 

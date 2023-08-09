@@ -85,7 +85,6 @@ EXAMPLES = '''
     auto_reload: true
     recurrence:
       - RRULE:FREQ=DAILY;INTERVAL=1;BYHOUR=11;BYMINUTE=18;BYSECOND=0
-      - RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=MO,TU;BYHOUR=13;BYMINUTE=17;BYSECOND=0
     end_date_time: 2022-10-12T23:59:00
     start_date_time: 2022-09-19T11:18:00
     auto_reload_partial: true

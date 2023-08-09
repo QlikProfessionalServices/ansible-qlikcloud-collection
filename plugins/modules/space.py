@@ -50,10 +50,25 @@ options:
 '''
 
 EXAMPLES = '''
-  # Create space
+  # Create a new shared space.
   space:
     name: Test
     type: shared
+
+  # Create a new managed space.
+  space:
+    name: Published Apps
+    type: managed
+
+  # Create a new data space.
+  space:
+    name: Data Files
+    type: data
+
+  # Change the owner of an existing space.
+  space:
+    name: Test
+    owner_id: R2aCCzAa_fvf1s-NI9XU2y467l-g4sX6
 '''
 
 

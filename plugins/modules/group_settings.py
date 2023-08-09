@@ -28,7 +28,7 @@ options:
 '''
 
 EXAMPLES = '''
-  # Create JWT IdP
+  # Set group settings
   group_settings:
     auto_create_groups: yes
     sync_idp_groups: yes

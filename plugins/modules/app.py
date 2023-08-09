@@ -53,9 +53,42 @@ options:
 '''
 
 EXAMPLES = '''
-  # Create app
+  # Create app in personal space
   app:
     name: Test
+    description: My test app
+
+  # Create app in shared space
+  app:
+    name: Test
+    space: Development
+
+  # Import a QVF
+  app:
+    file: Test.qvf
+    name: Test App
+    space: Development
+
+  # Rename an app
+  app:
+    id: 116dbfae-7fb9-4983-8e23-5ccd8c508722
+    name: My App
+
+  # Change app owner
+  app:
+    name: Test
+    owner_id: R2aCCzAa_fvf1s-NI9XU2y467l-g4sX6
+
+  # Publish app to managed space
+  app:
+    origin_app_id: 116dbfae-7fb9-4983-8e23-5ccd8c508722
+    space: Published Apps
+    name: Sales Dashboard
+
+  # Reload an app
+  app:
+    name: My App
+    state: reloaded
 '''
 
 

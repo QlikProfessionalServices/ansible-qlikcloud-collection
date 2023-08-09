@@ -44,12 +44,27 @@ options:
 '''
 
 EXAMPLES = '''
-  # Set script content
+  # Set script to load inline table
   app_script:
     app_id: 116dbfae-7fb9-4983-8e23-5ccd8c508722
     content: |
-      SET var='value'
-      SET var2='another'
+      LOAD * INLINE [
+        Dim1, Dim2, Value
+        A, A01, 100
+        B, B01, 40
+        B, B02, 60
+      ];
+
+  # Set script content from file
+  app_script:
+    app_id: 116dbfae-7fb9-4983-8e23-5ccd8c508722
+    content: "{{ lookup('ansible.builtin.file', 'script.qvs') }}"
+
+  # Ensure data connections in script are prefixed with space name
+  app_script:
+    app_id: 116dbfae-7fb9-4983-8e23-5ccd8c508722
+    regexp: LIB CONNECT TO '([^:]*)'
+    replace: LIB CONNECT TO 'Space Name:\1'
 '''
 
 

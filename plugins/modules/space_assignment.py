@@ -53,11 +53,19 @@ options:
 '''
 
 EXAMPLES = '''
-  # Create assignment
+  # Create assignment for a group
   space_assignment:
     space: Test
     type: group
     assignee_id: 639b0f044791a8f1f20aed23
+    roles:
+      - consumer
+
+  # Create assignment for a user
+  space_assignment:
+    space: Test
+    type: user
+    assignee_id: R2aCCzAa_fvf1s-NI9XU2y467l-g4sX6
     roles:
       - consumer
 '''
