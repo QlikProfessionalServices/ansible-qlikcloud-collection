@@ -29,7 +29,7 @@ options:
 
 EXAMPLES = '''
   # Set group settings
-  group_settings:
+  qlik.cloud.group_settings:
     auto_create_groups: yes
     sync_idp_groups: yes
 

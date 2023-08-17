@@ -46,17 +46,17 @@ options:
 
 EXAMPLES = '''
   # Trigger an automation
-  automation:
+  qlik.cloud.automation:
     name: My Automation
     state: triggered
 
   # Rename an automation
-  automation:
+  qlik.cloud.automation:
     id: ef8d810f-13e2-4bdb-8c51-2309cba4ae5c
     name: My Automation
 
   # Create an automation
-  automation:
+  qlik.cloud.automation:
     name: My Automation
     workspace: "{{ lookup('file', 'myautomation.json') }}"
 '''

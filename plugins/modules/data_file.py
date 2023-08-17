@@ -77,17 +77,17 @@ options:
 
 EXAMPLES = '''
   # Upload a new data file.
-  data_file:
+  qlik.cloud.data_file:
     name: MyFile.csv
     file: files/MyFile.csv
 
   # Change the owner of an existing data file.
-  data_file:
+  qlik.cloud.data_file:
     name: MyFile.csv
     owner_id: R2aCCzAa_fvf1s-NI9XU2y467l-g4sX6
 
   # Change the space that an existing data file resides in.
-  data_file:
+  qlik.cloud.data_file:
     name: MyFile.csv
     space: Development
 '''

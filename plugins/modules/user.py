@@ -70,7 +70,7 @@ options:
 
 EXAMPLES = '''
   # Create user
-  user:
+  qlik.cloud.user:
     subject: testuser1
     name: Test User
     email: test.user@qlik.com

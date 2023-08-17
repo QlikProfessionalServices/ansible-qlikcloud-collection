@@ -29,7 +29,7 @@ options:
 
 EXAMPLES = '''
   # Create web integration
-  web_integration:
+  qlik.cloud.web_integration:
     name: Website
     valid_origins: https://www.qlik.com
 

@@ -31,7 +31,7 @@ options:
 
 EXAMPLES = '''
   # Set license settings
-  license_settings:
+  qlik.cloud.license_settings:
     auto_assign_analyzer: yes
     auto_assign_professional: yes
 

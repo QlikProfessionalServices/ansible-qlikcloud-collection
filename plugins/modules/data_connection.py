@@ -48,7 +48,7 @@ options:
 
 EXAMPLES = '''
   # Create Databricks connection
-  data_connection:
+  qlik.cloud.data_connection:
     datasource_id: databricks
     connection_name: DatabricksAPI-StandardRequest
     space: DCaaS
@@ -64,7 +64,7 @@ EXAMPLES = '''
       ssl: true
 
   # Create REST connection
-  data_connection:
+  qlik.cloud.data_connection:
     datasource_id: rest
     connection_name: RestAPI-StandardRequest
     space: DCaaS
@@ -72,7 +72,7 @@ EXAMPLES = '''
       url: https://tenant.qlikcloud.com/api/v1/items
 
   # Create Amazon S3 V2 connection
-  qlikprofessionalservices.qlikcloud.data_connection:
+  qlik.cloud.data_connection:
     data_source_id: AmazonS3ConnectorV2
     connection_name: AmazonS3V2API-StandardRequest
     space: DCaaS
@@ -83,7 +83,7 @@ EXAMPLES = '''
       bucketName: mybucket
 
   # Create Salesforce connection
-  qlikprofessionalservices.qlikcloud.data_connection:
+  qlik.cloud.data_connection:
     data_source_id: sfdc
     connection_name: SfdcAPI-StandardRequest
     space: DCaaS
@@ -96,7 +96,7 @@ EXAMPLES = '''
       sftoken: "1234"
 
   # Create Google BigQuery connection
-  qlikprofessionalservices.qlikcloud.data_connection:
+  qlik.cloud.data_connection:
     data_source_id: gbq
     connection_name: GBQAPI-ServiceAuthRequest
     space: DCaaS
@@ -110,7 +110,7 @@ EXAMPLES = '''
       p12_custom_pwd: secret
 
   # Create Google Cloud Storage connection
-  qlikprofessionalservices.qlikcloud.data_connection:
+  qlik.cloud.data_connection:
     data_source_id: File_GoogleCloudStorageConnector
     connection_name: GCSAPI-StandardRequest
     space: DCaaS
@@ -121,7 +121,7 @@ EXAMPLES = '''
       bucketName: mybucket
 
   # Create SFTP connection
-  qlikprofessionalservices.qlikcloud.data_connection:
+  qlik.cloud.data_connection:
     data_source_id: File_FileTransferConnector
     connection_name: SftpAPI-StandardRequest-PrivateKeyFile
     space: DCaaS

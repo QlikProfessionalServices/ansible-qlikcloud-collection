@@ -43,7 +43,7 @@ options:
 
 EXAMPLES = '''
   # Import extension
-  extension:
+  qlik.cloud.extension:
     name: my_extension
     file: files/my_extension.zip
 '''

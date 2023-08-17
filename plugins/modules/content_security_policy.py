@@ -81,7 +81,7 @@ options:
 
 EXAMPLES = '''
   # Create content security policy
-  content_security_policy:
+  qlik.cloud.content_security_policy:
     name: Website
     origin: https://www.qlik.com
 

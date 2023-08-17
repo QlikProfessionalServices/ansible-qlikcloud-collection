@@ -51,22 +51,22 @@ options:
 
 EXAMPLES = '''
   # Create a new shared space.
-  space:
+  qlik.cloud.space:
     name: Test
     type: shared
 
   # Create a new managed space.
-  space:
+  qlik.cloud.space:
     name: Published Apps
     type: managed
 
   # Create a new data space.
-  space:
+  qlik.cloud.space:
     name: Data Files
     type: data
 
   # Change the owner of an existing space.
-  space:
+  qlik.cloud.space:
     name: Test
     owner_id: R2aCCzAa_fvf1s-NI9XU2y467l-g4sX6
 '''

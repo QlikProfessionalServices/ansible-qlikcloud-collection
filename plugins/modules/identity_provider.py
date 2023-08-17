@@ -57,7 +57,7 @@ options:
 
 EXAMPLES = '''
   # Create JWT IdP
-  identity_provider:
+  qlik.cloud.identity_provider:
     description: JWT
     protocol: jwtAuth
     provider: external

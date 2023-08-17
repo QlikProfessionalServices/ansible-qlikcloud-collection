@@ -78,7 +78,7 @@ options:
 
 EXAMPLES = '''
   # Create reload task
-  reload_task:
+  qlik.cloud.reload_task:
     app_id: 116dbfae-7fb9-4983-8e23-5ccd8c508722
     partial: true
     time_zone: America/Toronto

@@ -49,18 +49,18 @@ options:
 
 EXAMPLES = '''
   # Create a new link
-  generic_link:
+  qlik.cloud.generic_link:
     name: Qlik website
     link: https://www.qlik.com
 
   # Change the owner of an existing link.
-  generic_link:
+  qlik.cloud.generic_link:
     name: Qlik website
     link: https://www.qlik.com
     owner_id: R2aCCzAa_fvf1s-NI9XU2y467l-g4sX6
 
   # Change the space that an existing link resides in.
-  generic_link:
+  qlik.cloud.generic_link:
     name: Qlik website
     link: https://www.qlik.com
     space: Development

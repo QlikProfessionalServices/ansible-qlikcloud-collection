@@ -43,7 +43,7 @@ options:
 
 EXAMPLES = '''
   # Import theme
-  theme:
+  qlik.cloud.theme:
     name: My Theme
     file: files/my_theme.zip
 '''

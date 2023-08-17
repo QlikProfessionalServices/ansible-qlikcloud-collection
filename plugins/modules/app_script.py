@@ -45,7 +45,7 @@ options:
 
 EXAMPLES = '''
   # Set script to load inline table
-  app_script:
+  qlik.cloud.app_script:
     app_id: 116dbfae-7fb9-4983-8e23-5ccd8c508722
     content: |
       LOAD * INLINE [
@@ -56,12 +56,12 @@ EXAMPLES = '''
       ];
 
   # Set script content from file
-  app_script:
+  qlik.cloud.app_script:
     app_id: 116dbfae-7fb9-4983-8e23-5ccd8c508722
     content: "{{ lookup('ansible.builtin.file', 'script.qvs') }}"
 
   # Ensure data connections in script are prefixed with space name
-  app_script:
+  qlik.cloud.app_script:
     app_id: 116dbfae-7fb9-4983-8e23-5ccd8c508722
     regexp: LIB CONNECT TO '([^:]*)'
     replace: LIB CONNECT TO 'Space Name:\1'

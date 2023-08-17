@@ -38,7 +38,7 @@ options:
 
 EXAMPLES = '''
   # Create app object
-  app_object:
+  qlik.cloud.app_object:
     app_id: 116dbfae-7fb9-4983-8e23-5ccd8c508722
     properties:
       qProperty:
