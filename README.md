@@ -58,7 +58,7 @@ To use a module from this collection, please reference the full namespace, colle
   tasks:
     - qlik.cloud.space:
         name: myspace
-        account_type: shared
+        type: shared
 ```
 
 Or you can add full namepsace and collection name in the collections element:
@@ -72,5 +72,9 @@ Or you can add full namepsace and collection name in the collections element:
   tasks:
     - space:
         name: myspace
-        account_type: shared
+        type: shared
 ```
+
+## License
+
+`qlik.cloud` Ansible collection is [MIT licensed](LICENSE).
