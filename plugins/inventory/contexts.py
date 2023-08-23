@@ -19,6 +19,7 @@ DOCUMENTATION = '''
 import yaml
 
 from urllib.parse import urlparse
+from pathlib import Path
 
 from ansible.errors import AnsibleParserError
 from ansible.plugins.inventory import BaseInventoryPlugin
@@ -45,7 +46,9 @@ class InventoryModule(BaseInventoryPlugin):
                 print(e)
                 raise AnsibleParserError(e)
 
-            if 'contexts' in yaml_data:
+            if ('contexts' in yaml_data
+                or ('plugin' in yaml_data and yaml_data['plugin'] == 'qlik.cloud.contexts')):
+
                 return True
             else:
                 return False
@@ -61,6 +64,15 @@ class InventoryModule(BaseInventoryPlugin):
             yaml_data = self.loader.load_from_file(path, cache=False)
         except Exception as e:
             raise AnsibleParserError(e)
+
+        if ((not 'contexts' in yaml_data)
+            and ('plugin' in yaml_data and yaml_data['plugin'] == 'qlik.cloud.contexts')):
+
+            path = str(Path.home().joinpath('.qlik/contexts.yml'))
+            try:
+                yaml_data = self.loader.load_from_file(path, cache=False)
+            except Exception as e:
+                raise AnsibleParserError(e)
 
         for context_name, context_data in yaml_data['contexts'].items():
             if not isinstance(context_data, dict):
