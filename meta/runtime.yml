@@ -1,7 +1,7 @@
 ---
 # Collections must specify a minimum required ansible version to upload
 # to galaxy
-# requires_ansible: '>=2.9.10'
+requires_ansible: '>=2.12.0'
 
 # Content that Ansible needs to load from another location or that has
 # been deprecated/removed
@@ -46,14 +46,28 @@
 #     redirect: ansible_collections.ns.col.plugins.module_utils.new_location
 
 # Groups of actions/modules that take a common set of options
+# Set default tenant_uri and api_key for all qlik.cloud modules
+# module_defaults:
+#   group/qlik.cloud.tenant:
+#     tenant_uri: https://mytenant.eu.qlikcloud.com
+#     api_key: "{{ qlik_api_key }}"
 action_groups:
   tenant:
+    - app_object
+    - app_script
     - app
+    - automation
     - content_security_policy
+    - data_connection
+    - data_file
+    - extension
+    - generic_link
     - group_settings
     - identity_provider
     - license_settings
+    - reload_task
     - space_assignment
     - space
+    - theme
     - user
     - web_integration
