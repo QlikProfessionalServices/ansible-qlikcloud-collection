@@ -99,7 +99,7 @@ class QlikSpaceManager(QlikCloudManager):
         if self.resource != {}:
             return self.resource
 
-        results = self.client.get_spaces(name=self.module_params["name"],limit=100)
+        results = self.client.get_spaces(filter=f'name eq "{self.module_params["name"]}"')
         if len(results) > 0:
             self.resource = results[0]
         return self.resource
