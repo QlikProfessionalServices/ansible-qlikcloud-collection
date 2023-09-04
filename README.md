@@ -31,7 +31,7 @@ Or clone by your own:
 
 ```sh
 mkdir -p ~/.ansible/collections/ansible_collections/qlik
-git clone https://github.com/qlikprofessionalservices/ansible-qlikcloud-collections.git ~/.ansible/collections/ansible_collections/qlik/cloud
+git clone https://github.com/qlikprofessionalservices/ansible-qlikcloud-collection.git ~/.ansible/collections/ansible_collections/qlik/cloud
 ```
 
 The python module dependencies are not installed by ansible-galaxy. They can be manually installed
