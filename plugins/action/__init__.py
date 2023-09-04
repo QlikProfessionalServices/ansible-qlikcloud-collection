@@ -46,7 +46,7 @@ class ActionModule(ActionBase):
                 cacheable = boolean(self._task.args.pop('cacheable', False))
                 result['_ansible_facts_cacheable'] = cacheable
             kwargs['api_key'] = access_token
-        new_module_args = self._task.args | kwargs
+        new_module_args = self._task.args.update(kwargs)
 
         # do work!
         result = merge_hash(result, self._execute_module(module_args=new_module_args, task_vars=task_vars, wrap_async=wrap_async))
